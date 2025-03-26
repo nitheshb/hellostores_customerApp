@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "30741596190",
+    "project_id": "goshop-70695",
+    "storage_bucket": "goshop-70695.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:30741596190:android:8948154e3619a4c672460f",
+        "android_client_info": {
+          "package_name": "com.goshops"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "30741596190-j5j329lhsitv9rvngbrh3ca9p6eiida3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOSZ3d3YsM2JkTNjkTgDEQQNYYoJKVs1k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "30741596190-j5j329lhsitv9rvngbrh3ca9p6eiida3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,134 @@
+name: goshops
+description: A new Flutter project.
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+
+version: 2.0.0+1
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  dio: ^5.6.0
+  bloc: ^8.1.4
+  http: ^1.2.0
+  get_it: ^8.0.0
+  dartz: ^0.10.1
+  ftoast: ^2.0.0
+  freezed: ^2.5.7
+  provider: ^6.0.5
+  collection: ^1.18.0
+  flutter_bloc: ^8.1.2
+  url_launcher: ^6.3.0
+  path_provider: ^2.1.4
+  share_plus: ^10.0.2
+  vibration: ^2.0.0
+  #  flutter_vibrate: ^1.3.0
+  flutter_isolate: ^2.1.0
+  webview_flutter: ^4.9.0
+  connectivity_plus: ^6.0.5
+  shared_preferences: ^2.3.2
+  sliding_up_panel: ^2.0.0+1
+  freezed_annotation: ^2.4.4
+  flutter_displaymode: ^0.6.0
+  flutter_downloader: ^1.11.7
+  permission_handler: ^11.0.1
+  #  android_path_provider: ^0.3.0
+
+  #ui
+  flutter_screenutil: ^5.9.0
+  pull_to_refresh: ^2.0.0
+  google_fonts: ^6.2.1
+  flutter_remix: ^0.0.3
+  flutter_native_splash: ^2.4.1
+  flutter_keyboard_visibility: ^6.0.0
+  proste_indexed_stack: ^0.2.4
+  carousel_slider: ^5.0.0
+  smooth_page_indicator: ^1.1.0
+  intl: ^0.19.0
+  swipe_to: ^1.0.2
+  flutter_html: ^3.0.0-beta.2
+  zoom_pinch_overlay: ^1.4.1+3
+  rotated_corner_decoration: ^2.1.0+1
+  flutter_speed_dial: ^7.0.0
+  flutter_advanced_switch: ^3.1.0
+  flutter_slidable: ^4.0.0
+  flutter_swipe_detector: ^2.0.0
+  flutter_rating_bar: ^4.0.1
+  auto_size_text: ^3.0.0
+  grouped_list: ^6.0.0
+  sms_autofill: ^2.4.0
+  phone_text_field: ^0.0.6
+  colornames: ^0.1.0
+  jiffy: ^6.2.1
+  chewie: ^1.8.5
+  readmore: ^3.0.0
+  flutter_staggered_grid_view: ^0.7.0
+  url_launcher_ios: ^6.3.1
+
+  #media:
+  image: ^4.2.0
+  lottie: ^3.1.2
+  file_picker: ^8.0.7
+  photo_view: ^0.15.0
+  flutter_svg: ^2.0.10+1
+  image_picker: ^1.0.4
+  video_player: ^2.9.1
+  flutter_avif: ^2.4.1
+  cached_network_image: ^3.4.1
+
+  #maps:
+  geolocator: ^13.0.1
+  map_launcher: ^3.5.0
+  osm_nominatim: ^3.0.1
+  google_maps_flutter: ^2.9.0
+  google_place:
+    git:
+      url: https://github.com/theyoungastronauts/google_place.git
+
+
+  #firebase:
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.1
+  firebase_messaging: ^15.1.3
+  cloud_firestore: ^5.4.4
+  firebase_dynamic_links: ^6.0.8
+
+  #auth:
+  google_sign_in: ^6.1.0
+  flutter_facebook_auth: ^7.1.1
+  sign_in_with_apple: ^6.1.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+  build_runner: ^2.4.13
+  flutter_launcher_icons: ^0.14.1
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  min_sdk_android: 23
+  remove_alpha_ios: true
+  image_path: 'assets/images/app_logo.png'
+
+flutter_native_splash:
+  background_image: 'assets/images/loginBg.png'
+  android_12:
+  fullscreen: true
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/svg/
+    - assets/lottie/
+

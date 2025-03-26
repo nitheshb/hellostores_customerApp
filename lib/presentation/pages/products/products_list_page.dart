@@ -1,0 +1,300 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_remix/flutter_remix.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:goshops/application/filter/filter_bloc.dart';
+import 'package:goshops/application/new_ui/new_ui_bloc.dart';
+import 'package:goshops/application/products/product_bloc.dart';
+import 'package:goshops/infrastructure/model/model/product_model.dart';
+import 'package:goshops/infrastructure/service/services.dart';
+import 'package:goshops/infrastructure/local_storage/local_storage.dart';
+import 'package:goshops/presentation/components/components.dart';
+import 'package:goshops/presentation/pages/products/widgets/cart_button.dart';
+import 'package:goshops/presentation/pages/products/widgets/new_scrollable_ui.dart';
+import 'package:goshops/presentation/pages/products/widgets/simple_list_page.dart';
+import 'package:goshops/presentation/route/app_route.dart';
+import 'package:goshops/presentation/style/style.dart';
+import 'package:goshops/presentation/style/theme/theme.dart';
+import 'package:lottie/lottie.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+import '../../components/shimmer/products_shimmer.dart';
+import 'widgets/grid_list_page.dart';
+import 'widgets/one_list_page.dart';
+import 'widgets/search_text_field.dart';
+import 'widgets/vertical_list_page.dart';
+
+class ProductsListPage extends StatefulWidget {
+  final List<ProductData> list;
+  final String title;
+  final int totalCount;
+  final bool? isNewProduct;
+  final bool? isPopular;
+  final bool? isMostSaleProduct;
+  final int? categoryId;
+  final int? shopId;
+  final int? bannerId;
+  final int? brandId;
+
+  const ProductsListPage({
+    super.key,
+    required this.list,
+    required this.title,
+    required this.totalCount,
+    this.isNewProduct = false,
+    this.isMostSaleProduct = false,
+    this.categoryId,
+    this.shopId,
+    this.bannerId,
+    this.brandId,
+    this.isPopular,
+  });
+
+  @override
+  State<ProductsListPage> createState() => _ProductsListPageState();
+}
+
+class _ProductsListPageState extends State<ProductsListPage> {
+  final isLtr = LocalStorage.getLangLtr();
+  late RefreshController simpleController;
+  late RefreshController gridController;
+  late RefreshController verticalController;
+  late RefreshController oneController;
+  bool isFilter = false;
+  final _delayed = Delayed(milliseconds: 700);
+
+  @override
+  void initState() {
+    simpleController = RefreshController();
+    gridController = RefreshController();
+    verticalController = RefreshController();
+    oneController = RefreshController();
+
+    super.initState();
+  }
+
+  void onLoading(RefreshController refreshController, FilterState stateFilter) {
+    List<int> brandIds = [];
+    if (stateFilter.brands.isEmpty) {
+      if (widget.brandId != null) {
+        brandIds.add(widget.brandId ?? 0);
+      }
+
+      brandIds.addAll(stateFilter.brands);
+    }
+
+    context.read<ProductBloc>().add(ProductEvent.fetchProducts(
+        context: context,
+        controller: refreshController,
+        isNew: widget.isNewProduct,
+        isMostSale: widget.isMostSaleProduct,
+        isPopular: widget.isPopular,
+        categoryId: widget.categoryId ?? stateFilter.category?.id,
+        bannerId: widget.bannerId,
+        brandId: brandIds,
+        categoryIds: stateFilter.categories,
+        extrasId: stateFilter.extras,
+        priceFrom: stateFilter.rangeValues?.start,
+        priceTo: stateFilter.rangeValues?.end,
+        shopId: widget.shopId));
+  }
+
+  void onRefresh(RefreshController refreshController, FilterState stateFilter,
+      {String? query}) {
+    List<int> brandIds = [];
+    if (stateFilter.brands.isEmpty) {
+      if (widget.brandId != null) {
+        brandIds.add(widget.brandId ?? 0);
+      }
+      brandIds.addAll(stateFilter.brands);
+    }
+    context.read<ProductBloc>().add(ProductEvent.fetchProducts(
+          context: context,
+          controller: refreshController,
+          isRefresh: true,
+          isNew: widget.isNewProduct,
+          isPopular: widget.isPopular,
+          isMostSale: widget.isMostSaleProduct,
+          categoryId: widget.categoryId ?? stateFilter.category?.id,
+          bannerId: widget.bannerId,
+          brandId: brandIds,
+          categoryIds: stateFilter.categories,
+          extrasId: stateFilter.extras,
+          priceFrom: stateFilter.rangeValues?.start,
+          priceTo: stateFilter.rangeValues?.end,
+          shopId: widget.shopId,
+          query: query,
+        ));
+  }
+
+  @override
+  void dispose() {
+    verticalController.dispose();
+    oneController.dispose();
+    simpleController.dispose();
+    gridController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ProductBloc, ProductState>(
+      builder: (context, state) {
+        return BlocBuilder<FilterBloc, FilterState>(
+          builder: (context, stateFilter) {
+            return CustomScaffold(
+              appBar: (colors) =>
+                  _buildAppBar(colors, context, state, stateFilter),
+              body: (colors) {
+                if (state.commonProduct.isNotEmpty || state.isLoading) {
+                  switch (stateFilter.selectType) {
+                    case LayoutType.twoH:
+                      return state.isLoading
+                          ? const ProductsShimmer()
+                          : SimpleListPage(
+                              list: state.commonProduct,
+                              refreshController: simpleController,
+                              onLoading: () =>
+                                  onLoading(simpleController, stateFilter),
+                              onRefresh: () =>
+                                  onRefresh(simpleController, stateFilter),
+                            );
+                    case LayoutType.three:
+                      return GridListPage(
+                        list: state.commonProduct,
+                        refreshController: gridController,
+                        onLoading: () => onLoading(gridController, stateFilter),
+                        onRefresh: () => onRefresh(gridController, stateFilter),
+                      );
+                    case LayoutType.one:
+                      return OneListPage(
+                        list: state.commonProduct,
+                        refreshController: oneController,
+                        onLoading: () => onLoading(oneController, stateFilter),
+                        onRefresh: () => onRefresh(oneController, stateFilter),
+                      );
+                    case LayoutType.twoV:
+                      return VerticalListPage(
+                        list: state.commonProduct,
+                        refreshController: verticalController,
+                        onLoading: () =>
+                            onLoading(verticalController, stateFilter),
+                        onRefresh: () =>
+                            onRefresh(verticalController, stateFilter),
+                      );
+                    case LayoutType.newUi:
+                      return BlocProvider(
+                        create: (context) => NewUiBloc(),
+                        child: NewScrollableUi(list: state.commonProduct),
+                      );
+                  }
+                } else {
+                  return _noItem(colors);
+                }
+              },
+              floatingButtonLocation: FloatingActionButtonLocation.centerFloat,
+              floatingButton: (colors) => LocalStorage.getCartList()
+                      .where((element) => element.count > 0)
+                      .isNotEmpty
+                  ? CartButton(colors: colors)
+                  : const SizedBox.shrink(),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _noItem(CustomColorSet colors) {
+    return Center(
+      child: Column(
+        children: [
+          Lottie.asset('assets/lottie/empty_list.json'),
+          16.verticalSpace,
+          Text(
+            AppHelpers.getTranslation(TrKeys.noProduct),
+            style: CustomStyle.interNoSemi(color: colors.textBlack, size: 16),
+          ),
+        ],
+      ),
+    );
+  }
+
+  AppBar _buildAppBar(
+    CustomColorSet colors,
+    BuildContext context,
+    ProductState state,
+    FilterState filter,
+  ) {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: colors.backgroundColor,
+      leading: IconButton(
+        splashRadius: 20.r,
+        icon: Icon(
+          isLtr
+              ? FlutterRemix.arrow_left_s_line
+              : FlutterRemix.arrow_right_s_line,
+          size: 24.r,
+          color: colors.textBlack,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Row(
+        children: [
+          Expanded(
+            child: Text(
+              widget.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: CustomStyle.interNormal(color: colors.textBlack),
+            ),
+          ),
+          Text(
+            "${state.totalCount} ${AppHelpers.getTranslation(TrKeys.products)}",
+            style: CustomStyle.interNormal(color: colors.textBlack, size: 14),
+          ),
+        ],
+      ),
+      bottom: PreferredSize(
+        preferredSize: Size.fromHeight(55.r),
+        child: Padding(
+          padding: REdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: [
+              SearchTextField(
+                colors: colors,
+                onChanged: (v) {
+                  _delayed.run(() {
+                    onRefresh.call(RefreshController(), filter, query: v);
+                  });
+                },
+                suffixIcon: IconButton(
+                  splashRadius: 10,
+                  icon: Badge(
+                    backgroundColor: filter.categories.isNotEmpty ||
+                            filter.brands.isNotEmpty ||
+                            filter.extras.isNotEmpty
+                        ? CustomStyle.red
+                        : CustomStyle.transparent,
+                    child: Icon(
+                      FlutterRemix.equalizer_line,
+                      color: colors.textBlack,
+                      size: 18.r,
+                    ),
+                  ),
+                  onPressed: () {
+                    AppRoute.goFilterPage(context,
+                        categoryId: widget.categoryId);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
