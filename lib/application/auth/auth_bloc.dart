@@ -7,6 +7,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:goshops/domain/di/dependency_manager.dart';
 import 'package:goshops/infrastructure/model/model/user_model.dart';
 import 'package:goshops/infrastructure/service/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:goshops/infrastructure/firebase/firebase_service.dart';
 import 'package:goshops/infrastructure/local_storage/local_storage.dart';
@@ -77,19 +78,33 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
     emit(state.copyWith(isLoading: false));
   }
+  Future<UserCredential?> signInWithGoogle() async {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    if (googleUser == null) return null; // User canceled the sign-in
+
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+
+  }
 
   socialSignIn(event, emit) async {
     emit(state.copyWith(isLoading: true));
     Either<UserCredential, dynamic>? user;
+    UserCredential? user1;
     switch (event.type) {
       case FlutterRemix.apple_fill:
-        user = await FirebaseService.socialApple();
+      //  user = await FirebaseService.socialApple();
         break;
       case FlutterRemix.google_fill:
-        user = await FirebaseService.socialGoogle();
+        user1 = await  signInWithGoogle() ;
         break;
       case FlutterRemix.facebook_fill:
-        user = await FirebaseService.socialFacebook();
+        //user = await FirebaseService.socialFacebook();
         break;
     }
 

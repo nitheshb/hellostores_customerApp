@@ -7,6 +7,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_remix/flutter_remix.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:goshops/application/address/address_bloc.dart';
+import 'package:goshops/application/auth/auth_bloc.dart';
 import 'package:goshops/application/banner/banner_bloc.dart';
 import 'package:goshops/application/blog/blog_bloc.dart';
 import 'package:goshops/application/brand/brand_bloc.dart';
@@ -22,6 +23,8 @@ import 'package:goshops/domain/di/dependency_manager.dart';
 import 'package:goshops/infrastructure/service/services.dart';
 import 'package:goshops/infrastructure/local_storage/local_storage.dart';
 import 'package:goshops/infrastructure/repository/settings_repository.dart';
+import 'package:goshops/presentation/pages/auth/login_cart.dart';
+import 'package:goshops/presentation/pages/auth/sign_up_cart.dart';
 import 'package:goshops/presentation/style/themes/light_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -120,9 +123,12 @@ class _AppWidgetState extends State<AppWidget> {
                         child: child!,
                       ),
                       debugShowCheckedModeBanner: false,
-                      home: LocalStorage.getAddress() == null
-                          ? _address()
-                          : _main(),
+                      home:
+                     // LocalStorage.getAddress() == null
+                       //   ? _address()
+                           _main(),
+
+
                     ),
                   ),
                 );
